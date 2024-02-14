@@ -26,8 +26,8 @@ class Buyer(db.Model):
 
 buyer_deals = db.Table('buyer_deals',
     db.Column('buyer_id', db.Integer, db.ForeignKey('buyer.id'), primary_key=True),
-    db.Column('deal_id', db.Integer, db.ForeignKey('deal.id'), primary_key=True)
-)
+    db.Column('deal_id', db.Integer, db.ForeignKey('deal.id'), primary_key=True))
+
 class Deal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -36,7 +36,6 @@ class Deal(db.Model):
 
     seller_id = db.Column(db.Integer, db.ForeignKey('seller.id'), nullable=False)
     terms = db.relationship('Term', backref='deal', lazy=True)
-
 
 class Term(db.Model):
     id = db.Column(db.Integer, primary_key=True)

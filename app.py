@@ -1,8 +1,13 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from models import Seller, Buyer, Deal, Term, db
+import joblib
 
 app = Flask(__name__)
+
+# Load the pre-trained SVM model
+svm_model = joblib.load('svm_model.pkl')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:pranavsonawane@localhost/Negotiation_Engine'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -14,7 +19,6 @@ with app.app_context():
     db.create_all()
 
 # Define database models in models.py
-
 @app.route('/', methods=['GET'])
 def index():
     # Extract data from request
@@ -103,8 +107,6 @@ buyers = [buyer1, buyer2]
 deals = [deal1, deal2]
 terms = [term1, term2]
 
-
-
 # Authentication Endpoints
 @app.route('/login/seller', methods=['POST'])
 def login_seller():
@@ -170,7 +172,6 @@ def buyer_register():
     db.session.add(new_buyer)
     db.session.commit()
     return jsonify({'message': 'Buyer registration successful'}), 201
-
 
 # Seller Deal Management Endpoints
 @app.route('/seller/deals', methods=['GET'])
@@ -252,6 +253,23 @@ def accept_counteroffer(deal_id):
     deal.accepted_counteroffer = True
     db.session.commit()
     return jsonify({'message': 'Counteroffer accepted successfully'}), 200
+
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Receive input data from the client
+    data = request.json
+    
+    # Preprocess input data (if needed)
+    # For example, convert input data to the format expected by the SVM model
+    
+    # Make predictions using the SVM model
+    predictions = svm_model.predict(data)
+    
+    # Return the prediction results to the client
+    return jsonify({'predictions': predictions.tolist()})
+
 
 if __name__ == '__main__':
     
